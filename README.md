@@ -147,7 +147,7 @@ Langkah ini adalah konfigurasi awal yang pernah dicoba. Akses Proxmox yang dipak
 7. Save.
 
 | Sebelum | Sesudah |
-|---|---:|
+|---|---|
 | ![gambar6](https://lh3.googleusercontent.com/d/1PYaSPkyjH4srRIJBNnzYTEyDh35LTEr3) | ![gambar7](https://lh3.googleusercontent.com/d/16pNq7SFjMzJ6Xtsziv3K70vXb8ay6WQC)  |
 
 ### 3.2. Masuk ke dashboard Proxmox
@@ -572,7 +572,7 @@ Benchmark dijalankan dari shell Proxmox. FIO berjalan di Ubuntu melalui SSH, sed
 ### 12.1. Parameter FIO
 
 | Workload | `rw` | Block size | I/O depth |
-|---|---|---:|---:|
+|---|---|---|---|
 | Sequential read | `read` | 1 MiB | 16 |
 | Sequential write | `write` | 1 MiB | 16 |
 | Random read | `randread` | 4 KiB | 32 |
