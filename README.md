@@ -35,9 +35,9 @@ Get-FileHash "path:lokasi\file" -Algorithm SHA256
 
 | File | SHA256 |
 |---|---|
-| `VirtualBox-7.2.22-175245-Win.exe` | `afd0ff1656cbe04ed88ce619594ae021419d97cce89fa9bdc443e9a963f1713f` |
-| `proxmox-ve_9.2-1.iso` | `4e88fe416df9b527624a175f24c9aa07c714d3332afb1ee3dbf3879573ef2c6c` |
-| `ubuntu-26.04.1-live-server-amd64.iso` | `cc8a95cde20f6ced61a322420de00f10cc3c90ced545daa46cb9c1a117f1d927` |
+| `VirtualBox-7.2.22-175245-Win.exe` | [`afd0ff1656cbe04ed88ce619594ae021419d97cce89fa9bdc443e9a963f1713f`](https://download.virtualbox.org/virtualbox/7.2.22/SHA256SUMS) |
+| `proxmox-ve_9.2-1.iso` | [`4e88fe416df9b527624a175f24c9aa07c714d3332afb1ee3dbf3879573ef2c6c`](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso) |
+| `ubuntu-26.04.1-live-server-amd64.iso` | [`cc8a95cde20f6ced61a322420de00f10cc3c90ced545daa46cb9c1a117f1d927`](https://releases.ubuntu.com/resolute/SHA256SUMS) |
 
 ## 2. Buat VM Proxmox di VirtualBox
 
