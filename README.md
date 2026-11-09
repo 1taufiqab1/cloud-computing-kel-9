@@ -3,7 +3,7 @@
 ## Ringkasan konfigurasi
 
 | Komponen | Pengaturan |
-|---|---:|
+|---|---|
 | Laptop/host | Windows 11, RAM 16 GB, Intel Core i7-10750H |
 | VirtualBox – VM Proxmox | 4 vCPU, RAM 5 GB, disk sistem 32 GB |
 | Ubuntu VM di Proxmox | 3 vCPU, RAM 3 GB, disk sistem 8 GB |
@@ -28,7 +28,10 @@
 2. [Download ISO **Proxmox VE 9.2**.](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso)
 3. [Download ISO **Ubuntu Server 26.04.1 LTS**.](https://ubuntu.com/download/server#how-to-install-tab-lts)
 4. Opsional: cek SHA256 untuk memastikan file download tidak corrupt.
-5. Get-FileHash "path:lokasi\file" -Algorithm SHA256
+
+```powershell
+Get-FileHash "path:lokasi\file" -Algorithm SHA256
+```
 
 | File | SHA256 |
 |---|---|
@@ -1426,7 +1429,7 @@ Get-CimInstance -ClassName Win32_DeviceGuard -Namespace root\Microsoft\Windows\D
 2. Harapannya setelah semua langkah pada tahap 16 ini dilakukan:
 
 | Baris | Sebelum dilakukan tahap 16 | Setelah dilakukan tahap 16 |
-|---|---|---:|
+|---|---|---|
 | VirtualizationBasedSecurityStatus | 0 | 2 |
 | SecurityServicesConfigured | {0} | {2} |
 | SecurityServicesRunning | {0} | {2} |
