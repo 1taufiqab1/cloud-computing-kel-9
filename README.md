@@ -28,6 +28,7 @@
 2. [Download ISO **Proxmox VE 9.2**.](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso)
 3. [Download ISO **Ubuntu Server 26.04.1 LTS**.](https://ubuntu.com/download/server#how-to-install-tab-lts)
 4. Opsional: cek SHA256 untuk memastikan file download tidak corrupt.
+5. Get-FileHash "path:lokasi\file" -Algorithm SHA256
 
 | File | SHA256 |
 |---|---|
