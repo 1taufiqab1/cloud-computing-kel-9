@@ -467,11 +467,11 @@ Pada installer, pilih bahasa `English` dan `Ubuntu Server`.
    - Gateway: `10.0.2.2`
    - Name servers: `10.0.2.3`
    - Search domains: kosong
+   - Save
    - Tunggu "applying changes" selesai baru tekan Done
-4. Save → Done.
-5. Proxy dikosongkan, lalu Done.
-6. Biarkan mirror address default dan tunggu sampai tulisan ini muncul `mirror location passed test`.
-7. Pengaturan lainnya: Next → Next → Continue.
+4. Proxy dikosongkan, lalu Done.
+5. Biarkan mirror address default dan tunggu sampai tulisan ini muncul `mirror location passed test`.
+6. Pengaturan lainnya: Next → Next → Continue.
 
 ### 8.2. Profil Ubuntu
 
