@@ -5,8 +5,8 @@
 | Komponen | Pengaturan |
 |---|---|
 | Laptop/host | Windows 11, RAM 16 GB, Intel Core i7-10750H |
-| VirtualBox – VM Proxmox | 4 vCPU, RAM 5 GB, disk sistem 32 GB |
-| Ubuntu VM di Proxmox | 3 vCPU, RAM 3 GB, disk sistem 8 GB |
+| VirtualBox – VM Proxmox | 2 vCPU, RAM 6 GB, disk sistem 32 GB |
+| Ubuntu VM di Proxmox | 1 vCPU, RAM 2 GB, disk sistem 8 GB |
 | Storage data A | VDI 8 GB, tanpa LUKS di host Proxmox |
 | Storage data B | VDI 8 GB, LUKS di host Proxmox |
 | Virtual disk data di Ubuntu | RAW 4 GB per disk |
@@ -47,8 +47,8 @@ Get-FileHash "path:lokasi\file" -Algorithm SHA256
    - OS: Linux
    - Distribution: Debian
    - Version: Debian 13 Trixie (64-bit)
-   - Base Memory: **5120 MB**
-   - Number of CPUs: **4**
+   - Base Memory: **6144 MB**
+   - Number of CPUs: **2**
    - Disk: **32 GB**
 
 ![gambar1](https://lh3.googleusercontent.com/d/1efS_YexYjVgA6P-UlXnREDxr-gAE0vLe)
@@ -96,6 +96,8 @@ Buka PowerShell Windows, lalu jalankan:
 
 ```powershell
 & "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" modifyvm "PVE-Lab" --nested-hw-virt=on
+cd "C:\Program Files\Oracle\VirtualBox"
+.\VBoxManage modifyvm "PVE-Lab" --large-pages off
 ```
 
 ### 2.4. Port forwarding
@@ -428,23 +430,27 @@ Klik **Create VM** di pojok kanan atas dan isi:
 
 **Disks**
 1. `scsi0`: 
+   - Bus/Device VirtIO Block
    - Storage `local-lvm`
    - size **8 GB**
 2. Add `scsi1`
+   - Bus/Device VirtIO Block
    - Storage `PVE-Lab_1`
    - size **4 GB**
    - Format **Raw**.
 3. Add `scsi2`
+   - Bus/Device VirtIO Block
    - Storage `PVE-Lab_2`
    - size **4 GB**
    - Format **Raw**.
 
 **CPU**
-- Cores: **3**
-- Type: `host`
+- Cores: **1**
+- Type: `kvm64`
 
 **Memory**
-- Memory: **3072 MB**
+- Memory: **2048 MB**
+- Centang Advanced option, matikan Ballooning Device
 
 ### 7.3. Nyalakan VM Ubuntu
 
@@ -455,7 +461,7 @@ Klik **Create VM** di pojok kanan atas dan isi:
 
 ## 8. Install Ubuntu
 
-Pada installer, pilih bahasa `English` dan `Ubuntu Server`.
+Pada installer, pilih bahasa `English` dan `Ubuntu Server (Minimized)`.
 
 ### 8.1. Pengaturan jaringan Ubuntu
 
@@ -480,21 +486,37 @@ Pada installer, pilih bahasa `English` dan `Ubuntu Server`.
 - Pick a username: `labuser`
 - Password: `Proxmox1!`
 - Skip Ubuntu Pro.
-- Centang `Install OpenSSH server` tanpa SSH key.
+- Jangan centang `Install OpenSSH server`, kita install nanti saja.
 - Featured server snaps jangan centang. Langsung saja next.
-- Tunggu instalasi selesai.
 
-Setelah instalasi, jika kelihatan stuck ? `tekan enter sekali aja`, lalu login dengan user `labuser` dan password `Proxmox1!`.
+### 8.3. Selesaikan instalasi dan login pertama
+
+- Tunggu instalasi selesai.
+- Jika di terminal ada tulisan `subiquity/late/run user supplied` dan ada tombol `reboot now` di bawah, maka tekan tombol tersebut.
+- Jika ada tulisan `please remove the installation medium, then press enter:`
+  - Di web Proxmox, pilih VM Ubuntu, lalu Hardware → CD/DVD Drive → Edit.
+  - Pilih Do not use any media, lalu OK.
+  - Kembali ke console VM Ubuntu dan tekan Enter.
+- Jika terlihat stuck di SHA256 randomart image, tekan enter 1x, lalu login dengan user `labuser` dan password `Proxmox1!`.
+
+### 8.4. Update Ubuntu dan pasang OpenSSH serta nano
+
+Ubuntu Server (minimized) belum menyertakan nano, dan OpenSSH belum dipasang. Jalankan di terminal VM Ubuntu:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install openssh-server nano -y
+```
 
 ## 9. Siapkan filesystem data di Ubuntu
 
 Jalankan perintah berikut di terminal VM Ubuntu. Tahap `mkfs` hanya dilakukan saat menyiapkan disk pertama kali; jangan diulang pada disk yang sudah berisi data.
 
 ```bash
-sudo mkfs.ext4 -F -L BIASA /dev/sdb
-sudo mkfs.ext4 -F -L LUKS /dev/sdc
+sudo mkfs.ext4 -F -L BIASA /dev/vdb
+sudo mkfs.ext4 -F -L LUKS /dev/vdc
 sudo mkdir -p /mnt/BIASA /mnt/LUKS
-sudo blkid /dev/sdb /dev/sdc
+sudo blkid /dev/vdb /dev/vdc
 ```
 
 Edit `/etc/fstab`:
@@ -506,8 +528,8 @@ sudo nano /etc/fstab
 Tambahkan dua baris berikut di bagian paling bawah. Ganti UUID sesuai hasil `blkid`:
 
 ```text
-UUID=UUID_DEV_SDB /mnt/BIASA ext4 defaults,nofail 0 2
-UUID=UUID_DEV_SDC /mnt/LUKS ext4 defaults,nofail 0 2
+UUID=UUID_DEV_VDB /mnt/BIASA ext4 defaults,nofail 0 2
+UUID=UUID_DEV_VDC /mnt/LUKS ext4 defaults,nofail 0 2
 ```
 
 Muat ulang, mount, dan berikan akses ke `labuser`:
@@ -516,6 +538,7 @@ Muat ulang, mount, dan berikan akses ke `labuser`:
 sudo systemctl daemon-reload
 sudo mount -a
 sudo chown labuser:labuser /mnt/BIASA /mnt/LUKS
+df -h /mnt/BIASA /mnt/LUKS
 ```
 
 ## 10. Install FIO dan sysstat di Ubuntu
@@ -523,8 +546,6 @@ sudo chown labuser:labuser /mnt/BIASA /mnt/LUKS
 Jalankan di VM Ubuntu:
 
 ```bash
-sudo ln -sfn /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-sudo mv /etc/apt/sources.list.d/cdrom.sources /etc/apt/sources.list.d/cdrom.sources.disabled
 sudo apt update
 sudo apt install -y fio sysstat
 ```
